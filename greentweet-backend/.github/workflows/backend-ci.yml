@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'greentweet-backend/**'
+  pull_request:
+    paths:
+      - 'greentweet-backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd greentweet-backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          cd greentweet-backend
+          python manage.py test
