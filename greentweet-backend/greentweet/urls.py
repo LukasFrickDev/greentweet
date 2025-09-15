@@ -26,6 +26,5 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('profiles/', include('profiles.urls')),
     path('follows/', include('follows.urls')),
-
-
+    path('posts/', include('posts.urls')),
 ]
