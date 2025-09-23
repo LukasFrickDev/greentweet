@@ -20,7 +20,13 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         if serializer.instance.author != self.request.user:
             raise PermissionDenied("Você não pode editar posts de outros usuários.")
-        serializer.save()
+        # Se o usuário mandar image=null → remove a imagem
+        if self.request.data.get('image') is None or self.request.data.get('image') == 'null':
+            serializer.instance.image.delete(save=False)
+            serializer.save(image=None)
+        else:
+            serializer.save()
+
 
     def perform_destroy(self, instance):
         if instance.author != self.request.user:

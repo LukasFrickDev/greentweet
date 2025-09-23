@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from likes.models import Like
 from likes.serializers import LikeSerializer
 from posts.models import Post
+from notifications.models import Notification
+
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
@@ -22,7 +24,14 @@ class LikeViewSet(viewsets.ModelViewSet):
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             return Response({'error': 'Você já curtiu este post'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        if created and post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                type='like',
+                post=post
+            )
         return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):

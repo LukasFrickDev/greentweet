@@ -5,10 +5,10 @@ from posts.models import Post
 User = get_user_model()
 
 class Comment(models.Model):
-    author = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)  # permite acessar user.comments.all()
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)    # permite acessar post.comments.all()
     content = models.TextField(max_length=280)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.author.username} comentou: {self.content[:30]}"
+        return f"{self.user.username} comentou no post {self.post.id}"

@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from follows.models import Follow
 from follows.serializers import FollowSerializer
+from notifications.models import Notification
+
 
 User = get_user_model()
 
@@ -27,6 +29,14 @@ class FollowViewSet(viewsets.ModelViewSet):
         follow, created = Follow.objects.get_or_create(follower=request.user, following=following_user)
         if not created:
             return Response({'error': 'Você já segue este usuário'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if following_user != request.user:
+            Notification.objects.create(
+                recipient=following_user,
+                actor=request.user,
+                type='follow'
+        )
+
 
         return Response(FollowSerializer(follow).data, status=status.HTTP_201_CREATED)
 
