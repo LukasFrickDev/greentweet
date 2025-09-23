@@ -1,7 +1,7 @@
 import * as S from './styles'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, AppDispatch } from '../../store'
+import { type RootState, type AppDispatch } from '../../store'
 import { logout } from '../../store/slices/authSlice'
 import axios from 'axios'
 
@@ -19,14 +19,14 @@ interface Tweet {
 
 const Feed = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const token = useSelector((state: RootState) => state.auth.token)
+  const access = useSelector((state: RootState) => state.auth.access)
   const [newTweet, setNewTweet] = useState('')
   const [tweets, setTweets] = useState<Tweet[]>([])
   const [loading, setLoading] = useState(false)
 
   // 1) Função que busca tweets
   const fetchTweets = async () => {
-    if (!token) {
+    if (!access) {
       dispatch(logout())
       return
     }
@@ -46,7 +46,8 @@ const Feed = () => {
   // 2) Chama no mount
   useEffect(() => {
     fetchTweets()
-  }, [fetchTweets, token])
+    // re-fetch when auth token changes
+  }, [access])
 
   // 3) Ao enviar tweet, re-fetch e/ou prepend
   const handleTweetSubmit = async () => {
