@@ -1,1 +1,1 @@
-from .profile_viewset import MyProfileViewSet
+from .profile_viewset import ProfileViewSet
