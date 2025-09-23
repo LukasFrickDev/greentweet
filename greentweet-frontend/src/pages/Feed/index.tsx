@@ -1,74 +1,60 @@
+// pages/Feed/index.tsx
 import * as S from './styles'
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { type RootState, type AppDispatch } from '../../store'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { logout } from '../../store/slices/authSlice'
-import axios from 'axios'
-
-interface Tweet {
-  id: number
-  author: {
-    id: number
-    name: string
-    avatarUrl: string
-  }
-  content: string
-  createdAt: string
-  likesCount: number
-}
+import api from '../../api/axios'
+import type { Post } from '../../types/Post'
+import PostCard from '../../components/PostCard'
 
 const Feed = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  const access = useSelector((state: RootState) => state.auth.access)
-  const [newTweet, setNewTweet] = useState('')
-  const [tweets, setTweets] = useState<Tweet[]>([])
+  const dispatch = useAppDispatch()
+  const access = useAppSelector((state) => state.auth.access)
+  const [newPost, setNewPost] = useState('')
+  const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
 
-  // 1) Função que busca tweets
-  const fetchTweets = async () => {
+  const fetchPosts = async () => {
     if (!access) {
       dispatch(logout())
       return
     }
     try {
-      const res = await axios.get<Tweet[]>('/api/tweets')
-      setTweets(
-        res.data.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-      )
-    } catch {
-      dispatch(logout())
+      const res = await api.get<Post[]>('/posts/')
+      setPosts(res.data)
+    } catch (err) {
+      console.error('Erro ao buscar posts:', err)
     }
   }
 
-  // 2) Chama no mount
   useEffect(() => {
-    fetchTweets()
-    // re-fetch when auth token changes
+    fetchPosts()
   }, [access])
 
-  // 3) Ao enviar tweet, re-fetch e/ou prepend
-  const handleTweetSubmit = async () => {
-    if (!newTweet.trim()) return
+  const handlePostSubmit = async () => {
+    if (!newPost.trim()) return
     setLoading(true)
     try {
-      const res = await axios.post<Tweet>('/api/tweets', { content: newTweet })
-      // opcional: inspecione o formato retornado
-      console.log('created tweet:', res.data)
-
-      // a) Prepend manual
-      setTweets((prev) => [res.data, ...prev])
-
-      // b) OU re-fetch completo (descomente se preferir)
-      // await fetchTweets()
-
-      setNewTweet('')
+      const res = await api.post<Post>('/posts/', { content: newPost })
+      setPosts((prev) => [res.data, ...prev])
+      setNewPost('')
     } catch (err) {
-      console.error('Erro ao tweetar:', err)
+      console.error('Erro ao criar post:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLike = async (id: number) => {
+    try {
+      await api.post('/likes/', { post: id })
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, likes_count: p.likes_count + 1 } : p
+        )
+      )
+    } catch (err) {
+      console.error('Erro ao curtir:', err)
     }
   }
 
@@ -82,34 +68,18 @@ const Feed = () => {
       <S.NewTweetWrapper>
         <S.TweetInput
           placeholder="No que você está pensando?"
-          value={newTweet}
-          onChange={(e) => setNewTweet(e.target.value)}
+          value={newPost}
+          onChange={(e) => setNewPost(e.target.value)}
         />
-        <S.TweetButton disabled={loading} onClick={handleTweetSubmit}>
-          {loading ? 'Tweetando...' : 'Tweetar'}
+        <S.TweetButton disabled={loading} onClick={handlePostSubmit}>
+          {loading ? 'Publicando...' : 'Publicar'}
         </S.TweetButton>
       </S.NewTweetWrapper>
 
       <S.TweetsWrapper>
-        {tweets &&
-          tweets.map((tweet) => (
-            <S.TweetCard key={tweet.id}>
-              <S.Avatar src={tweet.author.avatarUrl} alt={tweet.author.name} />
-              <S.TweetBody>
-                <header>
-                  <span className="author">{tweet.author.name}</span>
-                  <span className="date">
-                    {new Date(tweet.createdAt).toLocaleString()}
-                  </span>
-                </header>
-                <p>{tweet.content}</p>
-                <footer>
-                  <button>Curtir ({tweet.likesCount})</button>
-                  <button>Responder</button>
-                </footer>
-              </S.TweetBody>
-            </S.TweetCard>
-          ))}
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} onLike={handleLike} />
+        ))}
       </S.TweetsWrapper>
     </S.Container>
   )

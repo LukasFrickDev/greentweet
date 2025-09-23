@@ -1,10 +1,11 @@
 import styled from 'styled-components'
+import { colors } from '../../styles';
 export const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
-  background: var(--bg-dark);
-  color: var(--text-light);
+  background: ${colors.bgDark};
+  color: ${colors.textLight};
   min-height: 100vh;
 `
 
@@ -16,11 +17,11 @@ export const Header = styled.header`
 
   h1 {
     font-family: 'Azonix', sans-serif;
-    color: var(--primary);
+    color: ${colors.primary};
   }
 
   button {
-    background: var(--primary);
+    background: ${colors.primary};
     border: none;
     color: #fff;
     padding: 0.5rem 1rem;
@@ -30,7 +31,7 @@ export const Header = styled.header`
 `
 
 export const NewTweetWrapper = styled.div`
-  background: var(--bg-dark);
+  background: ${colors.bgDark};
   border: 1px solid #333;
   border-radius: 8px;
   padding: 1rem;
@@ -44,17 +45,17 @@ export const TweetInput = styled.textarea`
   border-radius: 4px;
   border: 1px solid #444;
   background: #1e2a28;
-  color: var(--text-light);
+  color: ${colors.textLight};
   resize: vertical;
   &:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: ${colors.primary};
   }
 `
 
 export const TweetButton = styled.button`
   margin-top: 0.75rem;
-  background: var(--primary);
+  background: ${colors.primary};
   color: #fff;
   padding: 0.5rem 1rem;
   border: none;
@@ -101,7 +102,7 @@ export const TweetBody = styled.div`
 
     .date {
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: ${colors.textMuted};
     }
   }
 
@@ -118,12 +119,12 @@ export const TweetBody = styled.div`
     button {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: ${colors.textMuted};
       cursor: pointer;
       font-size: 0.9rem;
 
       &:hover {
-        color: var(--primary);
+        color: ${colors.primary};
       }
     }
   }
