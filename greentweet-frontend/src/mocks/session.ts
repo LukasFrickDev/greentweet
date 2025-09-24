@@ -1,0 +1,1 @@
+export const LOGGED_USER_ID = 1 

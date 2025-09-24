@@ -1,22 +1,30 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Feed from "./pages/Feed";
-import { useSelector } from "react-redux";
-// Update the import path below to where your store's RootState type is actually exported
-import type { RootState } from "./store";
+import Profile from "./pages/Profile";
+import { PostsProvider } from './context/PostsContext'
+import { ToastProvider } from "./context/toast/ToastContext";
+
+
 
 function App() {
-  const access = useSelector((state: RootState) => state.auth.access);
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/feed" element={access ? <Feed /> : <Navigate to="/" />} />
-      </Routes>
-    </Router>
+    <ToastProvider>
+      <PostsProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/feed" element={ <Feed /> } />
+            <Route path="/profile/:id" element={ <Profile /> } />
+
+
+          </Routes>
+        </Router>
+      </PostsProvider>
+    </ToastProvider>
+
   );
 }
 

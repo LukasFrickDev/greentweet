@@ -1,12 +1,9 @@
 export interface Post {
   id: number
-  author: {
-    id: number
-    username: string
-    avatar_url?: string
-  }
+  authorId: number        // apenas o id do autor
   content: string
   image?: string
   created_at: string
-  likes_count: number
+  likes: number[]         // lista de userIds que curtiram
 }
+

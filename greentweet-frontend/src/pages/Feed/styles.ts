@@ -1,7 +1,10 @@
 import styled from 'styled-components'
-import { colors } from '../../styles';
+import { colors } from '../../styles'
+import { breakpoints } from '../../styles'
+import { fontSizes } from '../../styles'
+
 export const Container = styled.div`
-  max-width: 600px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 1rem;
   background: ${colors.bgDark};
@@ -12,30 +15,45 @@ export const Container = styled.div`
 export const Header = styled.header`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 1rem;
 
   h1 {
     font-family: 'Azonix', sans-serif;
     color: ${colors.primary};
-  }
+    font-size: ${fontSizes.large};
 
-  button {
-    background: ${colors.primary};
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+    @media (max-width: ${breakpoints.tablet}) {
+      font-size: ${fontSizes.tablet.large};
+    }
+
+    @media (max-width: ${breakpoints.mobile}) {
+      font-size: ${fontSizes.mobile.large};
+    }
   }
 `
 
+export const Content = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: ${breakpoints.tablet}) {
+    grid-template-columns: 1fr;
+  }
+`
+
+export const Main = styled.main`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`
+
 export const NewTweetWrapper = styled.div`
-  background: ${colors.bgDark};
-  border: 1px solid #333;
+  background: #1e2a28;
+  border: 1px solid ${colors.textMuted};
   border-radius: 8px;
   padding: 1rem;
-  margin-bottom: 1.5rem;
 `
 
 export const TweetInput = styled.textarea`
@@ -43,13 +61,23 @@ export const TweetInput = styled.textarea`
   min-height: 80px;
   padding: 0.75rem;
   border-radius: 4px;
-  border: 1px solid #444;
+  border: 1px solid ${colors.textMuted};
   background: #1e2a28;
   color: ${colors.textLight};
   resize: vertical;
+  font-size: ${fontSizes.small};
+
   &:focus {
     outline: none;
     border-color: ${colors.primary};
+  }
+
+  @media (max-width: ${breakpoints.tablet}) {
+    font-size: ${fontSizes.tablet.small};
+  }
+
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: ${fontSizes.mobile.small};
   }
 `
 
@@ -62,6 +90,29 @@ export const TweetButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   float: right;
+  font-size: ${fontSizes.small};
+
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: ${fontSizes.mobile.small};
+  }
+`
+
+export const FollowInfo = styled.div`
+  display: flex;
+  gap: 1rem;
+  font-size: ${fontSizes.small};
+
+  span {
+    color: ${colors.textLight};
+  }
+
+  strong {
+    color: ${colors.primary};
+  }
+
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: ${fontSizes.mobile.small};
+  }
 `
 
 export const TweetsWrapper = styled.div`
@@ -70,62 +121,113 @@ export const TweetsWrapper = styled.div`
   gap: 1rem;
 `
 
-export const TweetCard = styled.div`
+export const Aside = styled.aside`
   background: #1e2a28;
-  border: 1px solid #333;
+  border: 1px solid ${colors.textMuted};
   border-radius: 8px;
   padding: 1rem;
+  height: fit-content;
+`
+
+export const ProfileCard = styled.div`
   display: flex;
-  gap: 0.75rem;
-`
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 
-export const Avatar = styled.img`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-`
-
-export const TweetBody = styled.div`
-  flex: 1;
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
     margin-bottom: 0.5rem;
+  }
 
-    .author {
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
+  h2 {
+    margin: 0.25rem 0;
+    font-size: ${fontSizes.medium};
 
-    .date {
-      font-size: 0.8rem;
-      color: ${colors.textMuted};
+    @media (max-width: ${breakpoints.mobile}) {
+      font-size: ${fontSizes.mobile.medium};
     }
   }
 
   p {
-    font-size: 0.9rem;
-    line-height: 1.3;
+    font-size: ${fontSizes.small};
+    color: ${colors.textMuted};
+    margin-bottom: 0.75rem;
+
+    @media (max-width: ${breakpoints.mobile}) {
+      font-size: ${fontSizes.mobile.small};
+    }
+  }
+`
+
+export const Notifications = styled.div`
+  margin-top: 1.5rem;
+
+  h3 {
+    margin-bottom: 0.75rem;
+    color: ${colors.primary};
+    font-size: ${fontSizes.medium};
+
+    @media (max-width: ${breakpoints.mobile}) {
+      font-size: ${fontSizes.mobile.medium};
+    }
   }
 
-  footer {
-    margin-top: 0.75rem;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-    button {
-      background: transparent;
-      border: none;
-      color: ${colors.textMuted};
-      cursor: pointer;
-      font-size: 0.9rem;
+  li {
+    font-size: ${fontSizes.small};
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: #1e2a28;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
 
-      &:hover {
-        color: ${colors.primary};
-      }
+    @media (max-width: ${breakpoints.mobile}) {
+      font-size: ${fontSizes.mobile.small};
     }
+  }
+
+  li:hover {
+    background: #263632;
+  }
+
+  li.unread {
+    font-weight: bold;
+    border: 1px solid ${colors.primary};
+    color: ${colors.textLight};
+  }
+
+  li.read {
+    border: 1px solid ${colors.textMuted};
+    color: ${colors.textMuted};
+    font-weight: normal;
+  }
+`
+
+export const SeeMoreButton = styled.button`
+  margin-top: 0.75rem;
+  background: transparent;
+  border: none;
+  color: ${colors.primary};
+  cursor: pointer;
+  font-size: ${fontSizes.small};
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: ${fontSizes.mobile.small};
   }
 `
