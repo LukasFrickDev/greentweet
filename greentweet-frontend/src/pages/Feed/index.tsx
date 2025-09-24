@@ -1,86 +1,183 @@
-// pages/Feed/index.tsx
 import * as S from './styles'
-import { useState, useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { logout } from '../../store/slices/authSlice'
-import api from '../../api/axios'
-import type { Post } from '../../types/Post'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PostCard from '../../components/PostCard'
+import PostHighlight from '../../components/PostHighlight'
+import defaultAvatar from '../../assets/logo.png'
+import { mockUsers } from '../../mocks/users'
+import { usePosts } from '../../context/PostsContext'
+import type { Post } from '../../types'
+import type { Notification } from '../../types/Notification'
 
 const Feed = () => {
-  const dispatch = useAppDispatch()
-  const access = useAppSelector((state) => state.auth.access)
+  const {
+    posts,
+    selectedPost,
+    setSelectedPost,
+    toggleLike,
+    addPost,
+    addComment,
+    getCommentsForPost,
+    getNotificationsForLoggedUser,
+  } = usePosts()
+
   const [newPost, setNewPost] = useState('')
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(false)
+  const [showAll, setShowAll] = useState(false)
+  const [showAllComments, setShowAllComments] = useState(false)
+  const [newComment, setNewComment] = useState('')
+  const [isPosting, setIsPosting] = useState(false)
+  const [isCommenting, setIsCommenting] = useState(false)
 
-  const fetchPosts = async () => {
-    if (!access) {
-      dispatch(logout())
-      return
-    }
-    try {
-      const res = await api.get<Post[]>('/posts/')
-      setPosts(res.data)
-    } catch (err) {
-      console.error('Erro ao buscar posts:', err)
-    }
-  }
-
-  useEffect(() => {
-    fetchPosts()
-  }, [access])
+  const navigate = useNavigate()
 
   const handlePostSubmit = async () => {
     if (!newPost.trim()) return
-    setLoading(true)
+    setIsPosting(true)
+
+    // Delay de 1.5 segundos para mostrar "Publicando..."
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
     try {
-      const res = await api.post<Post>('/posts/', { content: newPost })
-      setPosts((prev) => [res.data, ...prev])
+      addPost(newPost)
       setNewPost('')
-    } catch (err) {
-      console.error('Erro ao criar post:', err)
     } finally {
-      setLoading(false)
+      setIsPosting(false)
     }
   }
 
-  const handleLike = async (id: number) => {
+  const handleAddComment = async (content: string) => {
+    if (!content.trim() || !selectedPost) return
+    setIsCommenting(true)
+    
+    // Delay de 2 segundos para mostrar "Comentando..."
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
     try {
-      await api.post('/likes/', { post: id })
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, likes_count: p.likes_count + 1 } : p
-        )
-      )
-    } catch (err) {
-      console.error('Erro ao curtir:', err)
+      addComment(selectedPost.id, content)
+      setNewComment('')
+    } finally {
+      setIsCommenting(false)
     }
   }
+
+  const handleNotificationClick = (n: Notification) => {
+    if (n.type === 'like' && n.postId) {
+      const post = posts.find((p) => p.id === n.postId)
+      if (post) {
+        setSelectedPost(post)
+        setShowAllComments(false)
+      }
+    }
+    if (n.type === 'follow' && n.userId) {
+      navigate(`/profile/${n.userId}`)
+    }
+  }
+
+  const handleCommentClick = (post: Post) => {
+    setSelectedPost(post)
+    setShowAllComments(false)
+  }
+
+  const commentsForPost = selectedPost ? getCommentsForPost(selectedPost.id) : []
 
   return (
     <S.Container>
       <S.Header>
         <h1>GreenTweet</h1>
-        <button onClick={() => dispatch(logout())}>Logout</button>
       </S.Header>
 
-      <S.NewTweetWrapper>
-        <S.TweetInput
-          placeholder="No que você está pensando?"
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-        />
-        <S.TweetButton disabled={loading} onClick={handlePostSubmit}>
-          {loading ? 'Publicando...' : 'Publicar'}
-        </S.TweetButton>
-      </S.NewTweetWrapper>
+      <S.Content>
+        <S.Main>
+          <S.NewTweetWrapper>
+            <S.TweetInput
+              placeholder="No que você está pensando?"
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+            />
+            <S.TweetButton onClick={handlePostSubmit} disabled={isPosting}>
+              {isPosting ? 'Publicando...' : 'Publicar'}
+            </S.TweetButton>
+          </S.NewTweetWrapper>
 
-      <S.TweetsWrapper>
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} onLike={handleLike} />
-        ))}
-      </S.TweetsWrapper>
+          {selectedPost && (
+            <PostHighlight
+              post={selectedPost}
+              comments={commentsForPost}
+              users={mockUsers} 
+              showAllComments={showAllComments}
+              onToggleLike={() => toggleLike(selectedPost.id)}
+              onComment={handleCommentClick}
+              onAddComment={handleAddComment}
+              onToggleShowComments={() => setShowAllComments((prev) => !prev)}
+              onClose={() => setSelectedPost(null)}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              isCommenting={isCommenting}
+            />
+          )}
+
+          <S.TweetsWrapper>
+            {posts
+              .filter((p) => !selectedPost || p.id !== selectedPost.id)
+              .map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onToggleLike={() => toggleLike(post.id)}
+                  onComment={handleCommentClick}
+                />
+              ))}
+          </S.TweetsWrapper>
+        </S.Main>
+
+        <S.Aside>
+          <S.ProfileCard>
+            <img
+              src={mockUsers[0].avatar_url || defaultAvatar}
+              alt={mockUsers[0].username}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = defaultAvatar
+              }}
+            />
+            <h2>@{mockUsers[0].username}</h2>
+            <p>{mockUsers[0].bio}</p>
+            <S.FollowInfo>
+              <span><strong>{mockUsers[0].following}</strong> Seguindo</span>
+              <span><strong>{mockUsers[0].followers}</strong> Seguidores</span>
+            </S.FollowInfo>
+          </S.ProfileCard>
+
+          <S.Notifications>
+            <h3>Notificações</h3>
+            <ul>
+              {getNotificationsForLoggedUser()
+                .slice(0, showAll ? undefined : 5)
+                .map((n) => (
+                  <li
+                    key={n.id}
+                    className={n.is_read ? 'read' : 'unread'}
+                    onClick={() => handleNotificationClick(n)}
+                  >
+                    {(() => {
+                      const user = mockUsers.find((u) => u.id === n.userId)
+                      const username = user?.username || 'alguém'
+
+                      if (n.type === 'like') return `${username} curtiu seu post 💚`
+                      if (n.type === 'comment') return `${username} comentou no seu post 💬`
+                      if (n.type === 'follow') return `${username} começou a seguir você 👤`
+                      return 'Notificação'
+                    })()}
+                  </li>
+                ))}
+            </ul>
+            {getNotificationsForLoggedUser().length > 5 && (
+              <S.SeeMoreButton onClick={() => setShowAll((prev) => !prev)}>
+                {showAll ? 'Ver menos' : 'Ver mais'}
+              </S.SeeMoreButton>
+            )}
+          </S.Notifications>
+        </S.Aside>
+      </S.Content>
     </S.Container>
   )
 }
