@@ -31,6 +31,12 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
+# Domínios confiáveis para CSRF (precisa incluir https://)
+CSRF_TRUSTED_ORIGINS = [
+    "https://greentweet-backend.onrender.com",
+]
+
+
 
 # Application definition
 
