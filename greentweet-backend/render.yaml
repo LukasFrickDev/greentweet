@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: greentweet-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn greentweet.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: greentweet.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "greentweet-backend.onrender.com"
+databases:
+  - name: greentweet-db
+    plan: free
