@@ -2,6 +2,7 @@ services:
   - type: web
     name: greentweet-backend
     env: python
+    rootDir: greentweet-backend
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn greentweet.wsgi:application
