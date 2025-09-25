@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEventHandler } from 'react'
 import { useNavigate } from 'react-router-dom'
-import defaultAvatar from '../../assets/logo.png'
+import defaultAvatar from '../../assets/Logo.png'
 import { searchApi } from '../../api/search'
 import type { Post } from '../../types/Post'
 import type { Profile } from '../../types/Profile'

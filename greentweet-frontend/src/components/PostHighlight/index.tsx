@@ -2,7 +2,7 @@
 import * as S from './styles'
 import type { Post } from '../../types/Post'
 import type { Comment } from '../../types/Comments'
-import defaultAvatar from '../../assets/logo.png'
+import defaultAvatar from '../../assets/Logo.png'
 import { Link } from 'react-router-dom'
 import { SeeMoreButton } from '../../pages/Feed/styles'
 
