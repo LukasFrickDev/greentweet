@@ -1,109 +1,197 @@
-# GreenTweet
-GreenTweet é uma aplicação fullstack inspirada no Twitter, desenvolvida como projeto final do curso EBAC Desenvolvedor FullStack Python.
-O objetivo é implementar funcionalidades essenciais de uma rede social: autenticação, perfis, seguir/seguir, feed, postagens, curtidas e comentários.
+# 🌱 GreenTweet
 
-📚 Tecnologias
-Frontend
-- React 18 + TypeScript
-- Redux Toolkit + RTK Query
-- React Router
-- styled-components
-- Vite
-Backend
-- Python 3.11
-- Django 5 + Django REST Framework
-- JWT Authentication (djangorestframework-simplejwt)
-- PostgreSQL (Neon/Render) ou MySQL (PlanetScale)
-- Cloudinary (upload de imagens)
+Aplicação fullstack inspirada no Twitter, criada como projeto final do curso EBAC Desenvolvedor FullStack Python. O objetivo é oferecer uma experiência completa de rede social: cadastro e onboarding guiados, perfis personalizáveis, feed dinâmico com posts multimídia, interações (curtidas, comentários, follows) e acompanhamento por hashtags/notificações.
 
-🚀 Funcionalidades
-- Autenticação JWT (registro, login, refresh)
-- Perfil (editar nome, avatar, senha)
-- Seguir/Deixar de seguir usuários
-- Feed com posts apenas de usuários seguidos
-- Postagens com texto e imagem opcional
-- Curtidas e comentários em posts
-- Deploy acessível publicamente
+---
 
-📂 Estrutura do Repositório
-/greentweet-frontend   → Código do frontend
-/greentweet-backend    → Código do backend
+## 🧭 Visão Geral
 
+- **Arquitetura:** monorepo com `greentweet-frontend` (React + TS) e `greentweet-backend` (Django REST).  
+- **Fluxo de onboarding:** novo usuário registra-se, faz login automático, preenche perfil (nome, bio, avatar) e é levado ao feed ao salvar.  
+- **Feed completo:** posts com texto e/ou imagem (validadas até 2MB), cards com layout responsivo 16:9, destaque inline sem rolagem abrupta e carregamento condicional de conteúdo.  
+- **Notificações inteligentes:** sidebar mostra apenas notificações não lidas (likes, comentários, follows) e entra em modo “zerado” quando tudo foi visto.  
+- **Hashtags e filtros:** extração automática de hashtags no backend e filtros por tag no frontend com atualização dinâmica de métricas.  
+- **Rede social viva:** seguir/seguir, curtidas, comentários, busca, perfis com avatar, contadores e destaques.
 
+---
 
-🛠️ Como rodar localmente
-Pré-requisitos
-- Node.js 20+
-- Python 3.11+
-- PostgreSQL ou MySQL
-- Conta no Cloudinary (opcional para imagens)
+## ⚙️ Tecnologias Principais
 
-Backend
-# 1. Entrar na pasta
+| Camada | Tecnologias |
+| --- | --- |
+| **Frontend** | React 18 · TypeScript · Redux Toolkit · React Router · styled-components · Vite |
+| **Backend** | Python 3.11 · Django 5 · Django REST Framework · SimpleJWT |
+| **Infra recomendada** | PostgreSQL · Cloudinary (imagens) · Vercel (frontend) · Render/Fly/Railway (backend) |
+
+---
+
+## ⭐ Funcionalidades
+
+### Autenticação & Onboarding
+- Cadastro com validação de senhas/aceite de termos.  
+- Login automático pós-registro e busca do perfil via `/auth/me/`.  
+- Redirecionamento para edição de perfil com flag `onboarding`.  
+- Ao salvar dados iniciais, redirecionamento automático ao feed.
+
+### Feed & Posts
+- Postagens com texto opcional + upload de imagem (preview em 16:9, limite de 2MB).  
+- Validação backend aceita posts somente com imagem.  
+- Destaque (“highlight”) abre inline no ponto do post, sem rolagem para o topo.  
+- Botão de comentário muda para “Ver comentários” em posts do próprio autor.  
+- Filtro “Seguindo” x “Mundo” e filtro por hashtag (com banners de contexto).  
+- Paginação incremental (“Ver mais”) com preservação de estado.
+
+### Interações & Notificações
+- Curtidas com feedback imediato (flag `is_liked`, totalizador e undo).  
+- Comentários em destaque com expansão/colapso.  
+- Notificações listam apenas itens não lidos e marcam como lidas ao abrir o post relacionado.  
+- Contagem total apresentada em `Profile` e `Feed`.
+
+### Perfis & Seguidores
+- Visualização de seguidores/seguindo, contadores e ações rápidas.  
+- Edição completa (username, nomes, bio, avatar) com validação e preview.  
+- Remoção/reset de avatar suportados.  
+- Links para voltar ao feed e navegação orientada por tabs (posts/notifications/follows).
+
+### Hashtags & Busca
+- Extração automática de hashtags no `Post.save`.  
+- Endpoint `tags` retorna ranking para o painel lateral.  
+- Filtros por hashtag carregam posts via API dedicada, com mensagens de “sem resultados”.
+
+---
+
+## 🗂️ Estrutura
+
+```
+.
+├── greentweet-backend   # API Django REST RESTful
+│   ├── posts/           # Posts, likes, comentários, hashtags
+│   ├── profiles/        # Perfis, signals, avatars
+│   ├── users/           # Auth, registro
+│   └── ...
+└── greentweet-frontend  # SPA React com Redux
+	├── src/pages        # Feed, Profile, Register etc.
+	├── src/components   # PostCard, PostHighlight, SearchBar...
+	└── ...
+```
+
+---
+
+## 🛠️ Setup Local
+
+### Requisitos
+- Node.js 20+  
+- Python 3.11+  
+- Banco relacional (PostgreSQL recomendado)  
+- Conta Cloudinary (opcional para upload de mídia)
+
+### Backend
+
+```powershell
 cd greentweet-backend
-
-# 2. Criar e ativar ambiente virtual
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# 3. Instalar dependências
+.\.venv\Scripts\activate
 pip install -r requirements.txt
-
-# 4. Configurar variáveis de ambiente
-cp .env.example .env
-
-# 5. Rodar migrações
+copy .env.example .env
+# configure credenciais no .env
 python manage.py migrate
-
-# 6. Rodar servidor
 python manage.py runserver
+```
 
+### Frontend
 
-
-Frontend
-# 1. Entrar na pasta
+```powershell
 cd greentweet-frontend
-
-# 2. Instalar dependências
 npm install
-
-# 3. Configurar variáveis de ambiente
-cp .env.example .env
-
-# 4. Rodar servidor de desenvolvimento
+copy .env.example .env
+# ajuste VITE_API_BASE_URL se necessário
 npm run dev
+```
 
+Abra `http://localhost:5173` (ou a porta indicada pelo Vite) para o frontend e `http://localhost:8000` para o backend.
 
+---
 
-⚙️ Variáveis de Ambiente
-Backend (.env)
-SECRET_KEY=chave_secreta_django
+## 🔐 Variáveis de Ambiente
+
+### Backend (`greentweet-backend/.env`)
+
+```
+SECRET_KEY=alterar_para_uma_chave_segura
 DEBUG=True
-DATABASE_URL=postgresql://usuario:senha@host:porta/dbname
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/greentweet
 CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ALLOWED_HOSTS=localhost,127.0.0.1
+```
 
+### Frontend (`greentweet-frontend/.env`)
 
-Frontend (.env)
+```
 VITE_API_BASE_URL=http://localhost:8000
+```
 
+---
 
+## ✅ Qualidade & Testes
 
-🧪 Testes
-Backend
-pytest
+| Comando | Descrição |
+| --- | --- |
+| `npm run lint` | ESLint do frontend (executado e passando). |
+| `python manage.py test posts` | Smoke tests do app de posts (atualmente sem casos, roda sem erros). |
+| `python manage.py test profiles users` | Garantia de que signals e registro permanecem saudáveis (sem casos, roda sem erros). |
+| *(opcional)* `pytest` | Adapte para sua suíte de testes Python preferida. |
 
+Recomenda-se executar `python manage.py migrate` após atualizar o backend e, em produção, configurar `ALLOWED_HOSTS` adequadamente.
 
-Frontend
-npm test
+---
 
+## 🌐 Endpoints Principais
 
+### Autenticação
+- `POST /auth/register/` – cria usuário e dispara criação de perfil.  
+- `POST /auth/login/` – retorna tokens JWT (`access`, `refresh`).  
+- `GET /auth/me/` – informações do usuário autenticado.  
+- `POST /auth/refresh/` – renova token de acesso.
 
-☁️ Deploy
-- Backend: Render / Fly.io / Railway
-- Frontend: Vercel 
-- Banco: Neon (Postgres) ou PlanetScale (MySQL)
-- Imagens: Cloudinary
+### Posts & Interações
+- `GET /posts/` – lista geral (com paginação).  
+- `POST /posts/` – cria post (texto opcional + imagem).  
+- `GET /posts/<id>/` – detalhe.  
+- `DELETE /posts/<id>/` – remove (autor).  
+- `GET /comments/?post=<id>` – comentários por post.  
+- `POST /comments/` – adiciona comentário.  
+- `POST /likes/` / `DELETE /likes/<id>/` – curtir/descurtir.
 
-📜 Licença
-Este projeto é de uso educacional e não possui licença comercial.
+### Follows & Notificações
+- `POST /follows/` / `DELETE /follows/<id>/` – seguir/deixar de seguir.  
+- `GET /notifications/` – lista notificações (não lidas utilizadas no frontend).  
+- `PATCH /notifications/<id>/mark_read/` – marcar como lida (se implementado).
+
+### Hashtags & Busca
+- `GET /tags/` – ranking de hashtags.  
+- `GET /posts/tags/<tag>/` – posts de uma hashtag.  
+- `GET /search/?q=<termo>` – busca por posts/perfis.
+
+### Perfis
+- `GET /profiles/<username>/` – detalhes do perfil.  
+- `PATCH /profiles/<id>/` – atualização (nome, bio, avatar, username).
+
+---
+
+## 🧱 Próximos Passos Sugestivos
+- Adicionar testes automatizados (unidade e integração) para registro, onboarding e feed.  
+- Criar indicadores visuais durante o onboarding (ex.: passo 1/2) e mensagens de sucesso.  
+- Implementar marcação de notificações como lidas via API.  
+- Preparar scripts de deploy com exemplos reais (Render/Vercel).  
+- Internacionalização (pt-BR/en) para ampliar alcance.
+
+---
+
+## 👤 Autor
+
+Projeto desenvolvido por **Lukas Frick** no contexto educacional da EBAC.  
+[github.com/LukasFrickDev](https://github.com/LukasFrickDev)
+
+---
+
+Sinta-se à vontade para abrir issues ou PRs com sugestões, correções e melhorias! 🌿

@@ -18,10 +18,11 @@ export const Card = styled.div`
 `
 
 export const Avatar = styled.img`
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid ${colors.primary};
 
   @media (max-width: ${breakpoints.mobile}) {
     width: 40px;
@@ -31,44 +32,31 @@ export const Avatar = styled.img`
 
 export const Body = styled.div`
   flex: 1;
-
-  .author {
-    color: ${colors.primary};
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: ${fontSizes.small};
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: ${breakpoints.mobile}) {
-      font-size: ${fontSizes.mobile.small};
-    }
-  }
+  display: flex;
+  flex-direction: column;
 
   header {
-    display: flex;
-    justify-content: space-between;
     margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
 
     .author {
       font-weight: bold;
     }
 
     .date {
+      margin-left: 0.5rem;
       font-size: 0.8rem;
       color: ${colors.textMuted};
 
       @media (max-width: ${breakpoints.mobile}) {
-        font-size: 0.7rem;
+        font-size: ${fontSizes.mobile.small};
       }
     }
   }
 
   p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    margin-left: 0.5rem;
     font-size: ${fontSizes.small};
 
     @media (max-width: ${breakpoints.tablet}) {
@@ -82,8 +70,17 @@ export const Body = styled.div`
 
   footer {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
 
     button {
       background: transparent;
@@ -91,9 +88,18 @@ export const Body = styled.div`
       color: ${colors.textMuted};
       cursor: pointer;
       font-size: ${fontSizes.small};
+      transition: color 0.2s ease;
 
       &:hover {
         color: ${colors.primary};
+      }
+
+      &.delete {
+        color: ${colors.textMuted};
+
+        &:hover {
+          color: ${colors.primary};
+        }
       }
 
       @media (max-width: ${breakpoints.mobile}) {
@@ -103,8 +109,19 @@ export const Body = styled.div`
   }
 `
 
-export const Image = styled.img`
+export const ImageWrapper = styled.div`
   margin-top: 0.5rem;
-  max-width: 100%;
-  border-radius: 8px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+`
+
+export const Image = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 `

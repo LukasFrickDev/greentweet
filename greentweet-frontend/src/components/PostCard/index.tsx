@@ -1,49 +1,65 @@
-// components/PostCard/index.tsx
-
+// src/components/PostCard/index.tsx
 import { Link } from 'react-router-dom'
-
 import * as S from './styles'
-import type { Post } from '../../types'
-import { mockUsers } from '../../mocks/users'
-import defaultAvatar from '../../assets/logo.png'
-import { LOGGED_USER_ID } from '../../mocks/session'
+import type { Post } from '../../types/Post'
+import defaultAvatar from '../../assets/Logo.png'
 
 interface Props {
   post: Post
-  onToggleLike: (id: number) => void
+  onToggleLike: (post: Post) => void
   onComment: (post: Post) => void
+  canDelete?: boolean
+  onDelete?: (post: Post) => void
 }
 
-const PostCard = ({ post, onToggleLike, onComment }: Props) => {
-  const author = mockUsers.find((u) => u.id === post.authorId)
-  const hasLiked = post.likes.includes(LOGGED_USER_ID)
-
+const PostCard = ({ post, onToggleLike, onComment, canDelete = false, onDelete }: Props) => {
   return (
     <S.Card>
       <S.Avatar
-        src={author?.avatar_url || defaultAvatar}
-        alt={author?.username}
+        src={post.author_avatar || defaultAvatar}
+        alt={post.author_username}
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).src = defaultAvatar
         }}
       />
       <S.Body>
         <header>
-          <Link to={`/profile/${author?.id}`} className="author">
-            @{author?.username || 'desconhecido'}
+          <Link to={`/profile/${post.author_username}`} className="author">
+            @{post.author_username}
           </Link>
-
-          <span className="date">{new Date(post.created_at).toLocaleString()}</span>
+          <span className="date">
+            {new Date(post.created_at).toLocaleString()}
+          </span>
         </header>
-
-        <p>{post.content}</p>
-        {post.image && <S.Image src={post.image} alt="post" />}
+        {post.content && <p>{post.content}</p>}
+        {post.image && (
+          <S.ImageWrapper>
+            <S.Image src={post.image} alt="Imagem do post" loading="lazy" />
+          </S.ImageWrapper>
+        )}
 
         <footer>
-          <button onClick={() => onToggleLike(post.id)}>
-            {hasLiked ? '💔 Descurtir' : '💚 Curtir'} ({post.likes.length})
-          </button>
-          <button onClick={() => onComment(post)}>Comentar</button>
+          <div className="actions">
+            <button
+              type="button"
+              className={post.is_liked ? 'liked' : ''}
+              onClick={() => {
+                onToggleLike(post)
+              }}
+            >
+              {post.is_liked ? '💔 Descurtir' : '💚 Curtir'} ({post.likes_count ?? 0})
+            </button>
+
+            <button type="button" onClick={() => onComment(post)}>
+              {`${canDelete ? '💬 Ver comentários' : '💬 Comentar'} (${post.comments_count ?? 0})`}
+            </button>
+          </div>
+
+          {canDelete && (
+            <button type="button" className="delete" onClick={() => onDelete?.(post)}>
+              🗑️ Apagar
+            </button>
+          )}
         </footer>
       </S.Body>
     </S.Card>
