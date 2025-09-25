@@ -135,3 +135,14 @@ export const HomeRight = styled.div`
     width: 100%;
   }
 `
+
+export const ErrorTexts = styled.p`
+  color: ${colors.danger};
+  font-size: ${fontSizes.small};
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: ${fontSizes.mobile.small};
+  }`

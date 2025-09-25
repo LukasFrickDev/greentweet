@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Post(models.Model):
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
-    content = models.TextField(max_length=280)
+    content = models.TextField(max_length=280, blank=True)
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('posts.Tag', related_name='tagged_posts', blank=True)

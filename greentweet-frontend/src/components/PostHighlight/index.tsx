@@ -1,89 +1,120 @@
+// src/components/PostHighlight/index.tsx
 import * as S from './styles'
+import type { Post } from '../../types/Post'
+import type { Comment } from '../../types/Comments'
+import defaultAvatar from '../../assets/logo.png'
 import { Link } from 'react-router-dom'
-import PostCard from '../PostCard'
-import type { Post } from '../../types'
-import type { Comment } from '../../context/PostsContext'
-import type { User } from '../../types'
+import { SeeMoreButton } from '../../pages/Feed/styles'
 
-type Props = {
+interface Props {
   post: Post
   comments: Comment[]
-  users: User[] // 👈 novo
   showAllComments: boolean
-  onToggleLike: () => void
+  onToggleLike: (post: Post) => void
   onComment: (post: Post) => void
   onAddComment: (content: string) => void
   onToggleShowComments: () => void
   onClose: () => void
+  canDelete?: boolean
+  onDelete?: (post: Post) => void
   newComment: string
-  setNewComment: (value: string) => void
-  isCommenting?: boolean
+  setNewComment: (val: string) => void
+  isCommenting: boolean
 }
 
 const PostHighlight = ({
   post,
   comments,
-  users,
   showAllComments,
   onToggleLike,
-  onComment,
   onAddComment,
   onToggleShowComments,
   onClose,
+  canDelete = false,
+  onDelete,
   newComment,
   setNewComment,
-  isCommenting = false,
+  isCommenting,
 }: Props) => {
-  const commentsToShow = showAllComments ? comments : comments.slice(0, 3)
-
-  const renderComment = (c: Comment) => {
-    const u = users.find((u) => u.id === c.userId)
-    return (
-      <li key={c.id}>
-        <Link to={`/profile/${u?.id}`} className="author">
-          @{u?.username || 'desconhecido'}
-        </Link>
-        : {c.content}
-      </li>
-    )
-  }
-
   return (
-    <S.HighlightedPost>
-      <h3>Post em destaque</h3>
-      <PostCard
-        post={post}
-        onToggleLike={onToggleLike}
-        onComment={onComment}
-      />
+    <S.Highlight>
+      <S.CloseButton onClick={onClose}>✖</S.CloseButton>
+      <S.ContentPost> 
+        <S.Header>
+          <img
+            src={post.author_avatar || defaultAvatar}
+            alt={post.author_username}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = defaultAvatar
+            }}
+          />
+          <div>
+            <Link to={`/profile/${post.author_username}`} className="author">
+              @{post.author_username}
+            </Link>
+            <span>{new Date(post.created_at).toLocaleString()}</span>
+          </div>
+        </S.Header>
 
-      <S.CommentsSection>
+        <S.Content>
+          {post.content && <p>{post.content}</p>}
+          {post.image && <S.Image src={post.image} alt="post" />}
+        </S.Content>
+
+        <S.Footer>
+          <button type="button" onClick={() => onToggleLike(post)}>
+            {post.is_liked ? '💔 Descurtir' : '💚 Curtir'} ({post.likes_count ?? 0})
+          </button>
+
+          {canDelete && (
+            <button type="button" className="delete" onClick={() => onDelete?.(post)}>
+              🗑️ Apagar post
+            </button>
+          )}
+        </S.Footer>
+      </S.ContentPost>
+
+
+      <S.Comments>
         <h4>Comentários</h4>
-        <ul>{commentsToShow.map(renderComment)}</ul>
+        {(showAllComments ? comments : comments.slice(0, 3)).map((c) => (
+          <div key={c.id} className="comment">
+            <img
+              src={defaultAvatar}
+              alt={c.user_username}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = defaultAvatar
+              }}
+            />
+            <div>
+          <Link to={`/profile/${c.user_username}`} className="author">
+            @{c.user_username}
+          </Link>
+              <p>{c.content}</p>
+              <span>{new Date(c.created_at).toLocaleString()}</span>
+            </div>
+          </div>
+        ))}
 
         {comments.length > 3 && (
-          <S.SeeMoreButton onClick={onToggleShowComments}>
+          <SeeMoreButton onClick={onToggleShowComments}>
             {showAllComments ? 'Ver menos' : 'Ver mais'}
-          </S.SeeMoreButton>
+          </SeeMoreButton>
         )}
+      </S.Comments>
 
-        <S.CommentInputWrapper>
-          <S.CommentInput
-            placeholder="Escreva um comentário..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-          <S.CommentButton
-            onClick={() => onAddComment(newComment)}
-            disabled={isCommenting}
-          >
-            {isCommenting ? 'Comentando...' : 'Comentar'}
-          </S.CommentButton>
-        </S.CommentInputWrapper>
-      </S.CommentsSection>
-
-      <S.CloseButton onClick={onClose}>Fechar</S.CloseButton>
-    </S.HighlightedPost>
+      <S.NewComment>
+        <input
+          type="text"
+          placeholder="Escreva um comentário..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <button onClick={() => onAddComment(newComment)} disabled={isCommenting}>
+          {isCommenting ? 'Comentando...' : 'Comentar'}
+        </button>
+      </S.NewComment>
+    </S.Highlight>
   )
 }
 

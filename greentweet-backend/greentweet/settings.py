@@ -44,13 +44,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'users',
-    'profiles',
+    'profiles.apps.ProfilesConfig',
     'follows',
     'posts',
     'likes',
     'comments',
     'notifications',
     'search',
+
 ]
 
 MIDDLEWARE = [
@@ -137,6 +138,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Diretórios adicionais de estáticos (opcional, para seus assets locais)
 # Descomente se você tiver uma pasta "static" no projeto

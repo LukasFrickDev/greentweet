@@ -19,7 +19,7 @@ export const Container = styled.div`
 `
 
 export const FormWrapper = styled.div`
-  background: ${colors.bgDark};
+  background: ${colors.textMuted};
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -34,7 +34,7 @@ export const FormWrapper = styled.div`
 export const Title = styled.h2`
   margin-bottom: 1.5rem;
   text-align: center;
-  color: ${colors.primary};
+  color: ${colors.textLight};
   font-size: ${fontSizes.medium};
 
   @media (max-width: ${breakpoints.tablet}) {
@@ -57,8 +57,8 @@ export const Input = styled.input<{ hasError?: boolean }>`
   border-radius: 4px;
   border: 1px solid ${({ hasError }) => (hasError ? '#e74c3c' : '#ccc')};
   font-size: ${fontSizes.small};
-  background: ${colors.bgDark};
-  color: ${colors.textLight};
+  background: ${colors.textLight}; 
+  color: ${colors.primary};
 
   &:focus {
     outline: none;
@@ -86,7 +86,7 @@ export const CheckboxWrapper = styled.label`
 export const Button = styled.button`
   padding: 0.75rem;
   background: ${colors.primary};
-  color: #fff;
+  color: ${colors.textMuted};
   border: none;
   border-radius: 4px;
   font-size: ${fontSizes.small};
@@ -116,7 +116,7 @@ export const TextLink = styled.p`
   text-align: center;
   margin-top: 1rem;
   font-size: ${fontSizes.small};
-  color: ${colors.textMuted};
+  color: ${colors.textLight};
 
   & > span {
     color: ${colors.primary};

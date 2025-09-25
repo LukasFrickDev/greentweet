@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from posts.models import Post
 from posts.serializers import PostSerializer
@@ -15,7 +16,14 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.action == 'mine':
             return Post.objects.filter(author=self.request.user).order_by('-created_at')
-        return super().get_queryset()
+
+        queryset = super().get_queryset()
+        author_username = self.request.query_params.get('author')
+
+        if author_username:
+            queryset = queryset.filter(author__username=author_username)
+
+        return queryset
 
     def perform_update(self, serializer):
         if serializer.instance.author != self.request.user:
