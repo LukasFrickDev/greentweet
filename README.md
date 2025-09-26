@@ -197,15 +197,6 @@ Recomenda-se executar `python manage.py migrate` após atualizar o backend e, em
 
 ---
 
-## 🧱 Próximos Passos Sugestivos
-- Adicionar testes automatizados (unidade e integração) para registro, onboarding e feed.  
-- Criar indicadores visuais durante o onboarding (ex.: passo 1/2) e mensagens de sucesso.  
-- Implementar marcação de notificações como lidas via API.  
-- Preparar scripts de deploy com exemplos reais (Render/Vercel).  
-- Internacionalização (pt-BR/en) para ampliar alcance.
-
----
-
 ## 👤 Autor
 
 Projeto desenvolvido por **Lukas Frick** no contexto educacional da EBAC.  
