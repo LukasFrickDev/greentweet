@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
 
@@ -154,7 +154,7 @@ STATICFILES_DIRS = []
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = "/media/"
-USE_CLOUDINARY = os.getenv("USE_CLOUDINARY", "False") == "True"
+USE_CLOUDINARY = os.getenv("USE_CLOUDINARY", "False").lower() == "true"
 
 STORAGES = {
     "default": {
