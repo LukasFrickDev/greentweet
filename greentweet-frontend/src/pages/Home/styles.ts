@@ -14,18 +14,15 @@ export const HomeContainer = styled.div`
     font-size: ${fontSizes.large};
     color: ${colors.primary};
     text-align: center;
-    position: absolute;
-    bottom: 250px;
     width: 100%;
+
 
     @media (max-width: ${breakpoints.tablet}) {
       font-size: ${fontSizes.tablet.large};
-      bottom: 100px;
     }
 
     @media (max-width: ${breakpoints.mobile}) {
       font-size: ${fontSizes.mobile.large};
-      bottom: 200px;
     }
   }
 `

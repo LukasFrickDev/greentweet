@@ -52,7 +52,7 @@ class PostSerializer(serializers.ModelSerializer):
         avatar = getattr(profile, 'avatar', None)
         if avatar:
             url = avatar.url
-            if request is not None:
+            if request is not None and not url.lower().startswith(("http://", "https://")):
                 return request.build_absolute_uri(url)
             return url
         return None
@@ -63,7 +63,10 @@ class PostSerializer(serializers.ModelSerializer):
         if image:
             request = self.context.get('request')
             url = image.url
-            data['image'] = request.build_absolute_uri(url) if request is not None else url
+            if request is not None and not url.lower().startswith(("http://", "https://")):
+                data['image'] = request.build_absolute_uri(url)
+            else:
+                data['image'] = url
         else:
             data['image'] = None
         return data

@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'comments',
     'notifications',
     'search',
-
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -151,10 +152,31 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+USE_CLOUDINARY = os.getenv("USE_CLOUDINARY", "False") == "True"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
+        if USE_CLOUDINARY
+        else "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+if USE_CLOUDINARY:
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+        "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+        "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+        "SECURE": True,
+    }
+    MEDIA_ROOT = None
+else:
+    MEDIA_ROOT = BASE_DIR / "media"
 
 # Diretórios adicionais de estáticos (opcional, para seus assets locais)
 # Descomente se você tiver uma pasta "static" no projeto

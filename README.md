@@ -8,7 +8,7 @@ Aplicação fullstack inspirada no Twitter, criada como projeto final do curso E
 
 - **Arquitetura:** monorepo com `greentweet-frontend` (React + TS) e `greentweet-backend` (Django REST).  
 - **Fluxo de onboarding:** novo usuário registra-se, faz login automático, preenche perfil (nome, bio, avatar) e é levado ao feed ao salvar.  
-- **Feed completo:** posts com texto e/ou imagem (validadas até 2MB), cards com layout responsivo 16:9, destaque inline sem rolagem abrupta e carregamento condicional de conteúdo.  
+- **Feed completo:** posts com texto e/ou imagem (validadas até 2MB) armazenadas com segurança no Cloudinary, cards com layout responsivo 16:9, destaque inline sem rolagem abrupta e carregamento condicional de conteúdo.
 - **Notificações inteligentes:** sidebar mostra apenas notificações não lidas (likes, comentários, follows) e entra em modo “zerado” quando tudo foi visto.  
 - **Hashtags e filtros:** extração automática de hashtags no backend e filtros por tag no frontend com atualização dinâmica de métricas.  
 - **Rede social viva:** seguir/seguir, curtidas, comentários, busca, perfis com avatar, contadores e destaques.
@@ -98,6 +98,8 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+> 💡 **Cloudinary:** crie um par de credenciais (Cloud name, API key, API secret) em [cloudinary.com](https://cloudinary.com/), copie a string `CLOUDINARY_URL` exibida no painel e preencha as variáveis do `.env` conforme a seção abaixo. Com `USE_CLOUDINARY=True`, todos os uploads (postagens e avatars) são enviados diretamente para o Cloudinary, inclusive em ambiente local.
+
 ### Frontend
 
 ```powershell
@@ -120,15 +122,32 @@ Abra `http://localhost:5173` (ou a porta indicada pelo Vite) para o frontend e `
 SECRET_KEY=alterar_para_uma_chave_segura
 DEBUG=True
 DATABASE_URL=postgresql://usuario:senha@localhost:5432/greentweet
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=seu_api_key
+CLOUDINARY_API_SECRET=seu_api_secret
+USE_CLOUDINARY=True
 CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ALLOWED_HOSTS=localhost,127.0.0.1
 ```
+
+> 🔒 Não versione o `.env`. Na Vercel/Render, replique as mesmas variáveis de ambiente e redeploy para que o backend utilize o Cloudinary.
 
 ### Frontend (`greentweet-frontend/.env`)
 
 ```
 VITE_API_BASE_URL=http://localhost:8000
 ```
+
+---
+
+## 📸 Armazenamento de mídia (Cloudinary)
+
+1. **Crie uma conta** no Cloudinary e, no painel de API Keys, gere um par dedicado ao projeto.
+2. **Copie o `cloudinary://...`** indicado e preencha `CLOUDINARY_URL` junto com `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` e `USE_CLOUDINARY=True` no `.env` do backend.
+3. **Reinstale as dependências** (`pip install -r requirements.txt`) e reinicie o servidor para que o Django carregue o storage `cloudinary_storage.storage.MediaCloudinaryStorage`.
+4. **Produção:** replique as mesmas variáveis no Render (backend) e na Vercel (se necessário) antes do deploy. Quando `USE_CLOUDINARY=True`, todos os novos uploads (posts e avatars) são enviados diretamente ao Cloudinary; arquivos antigos em `media/` podem ser removidos manualmente.
+
+Uploads pré-existentes no filesystem não são migrados automaticamente. Reenvie as imagens importantes após ativar o Cloudinary para garantir que fiquem disponíveis em produção.
 
 ---
 

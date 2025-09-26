@@ -38,7 +38,7 @@ class FeedPostSerializer(serializers.ModelSerializer):
         avatar = getattr(profile, 'avatar', None)
         if avatar:
             url = avatar.url
-            if request is not None:
+            if request is not None and not url.lower().startswith(("http://", "https://")):
                 return request.build_absolute_uri(url)
             return url
         return None
@@ -48,7 +48,7 @@ class FeedPostSerializer(serializers.ModelSerializer):
             return None
         request = self.context.get('request')
         url = obj.image.url
-        if request is not None:
+        if request is not None and not url.lower().startswith(("http://", "https://")):
             return request.build_absolute_uri(url)
         return url
 

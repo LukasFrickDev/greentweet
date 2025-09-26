@@ -36,10 +36,12 @@ const NotificationListener = () => {
   const notifications = useAppSelector((state) => state.posts.notifications);
   const seenNotificationsRef = useRef<Set<number>>(new Set());
   const initializedRef = useRef(false);
+  const lastSeenCreatedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     seenNotificationsRef.current = new Set();
     initializedRef.current = false;
+    lastSeenCreatedAtRef.current = Date.now();
   }, [userId]);
 
   useEffect(() => {
@@ -88,9 +90,22 @@ const NotificationListener = () => {
 
     unseenNotifications.forEach((notification) => {
       seen.add(notification.id);
-      if (!notification.is_read) {
+      const createdAt = Date.parse(notification.created_at ?? "");
+      const lastSeenTimestamp = lastSeenCreatedAtRef.current ?? Date.now();
+      const hasValidTimestamp = !Number.isNaN(createdAt);
+      const shouldShowToast =
+        !notification.is_read && hasValidTimestamp && createdAt > lastSeenTimestamp;
+
+      if (shouldShowToast) {
         const message = buildNotificationMessage(notification);
         showToast(message, { duration: 4000 });
+      }
+
+      if (hasValidTimestamp) {
+        const current = lastSeenCreatedAtRef.current ?? lastSeenTimestamp;
+        if (createdAt > current) {
+          lastSeenCreatedAtRef.current = createdAt;
+        }
       }
     });
   }, [notifications, userId, showToast]);
