@@ -10,6 +10,4 @@ export const authApi = {
   me: () => api.get<AuthUser>("/auth/me/"),
 
   refresh: (refresh: string) => api.post<{ access: string }>("/auth/refresh/", { refresh }),
-  
-  logout: () => api.post("/auth/logout/"),
 }
