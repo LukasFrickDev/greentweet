@@ -3,6 +3,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 node_modules/
+greentweet-backend/staticfiles/
 
 # C extensions
 *.so
