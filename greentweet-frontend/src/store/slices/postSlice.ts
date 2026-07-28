@@ -83,7 +83,7 @@ export const deletePost = createAsyncThunk("posts/deletePost", async (postId: nu
 export const fetchComments = createAsyncThunk(
   "posts/fetchComments",
   async (postId: number) => {
-    const { data } = await commentsApi.list(postId) // GET /posts/:id/comments/
+    const { data } = await commentsApi.list(postId)
     return { postId, comments: data }
   }
 )

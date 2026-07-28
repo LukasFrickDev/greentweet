@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from comments.models import Comment
 from comments.serializers import CommentSerializer
 from notifications.models import Notification
@@ -9,6 +9,23 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        post_id = self.request.query_params.get('post')
+
+        if post_id is None:
+            return queryset
+
+        try:
+            post_id = int(post_id)
+        except (TypeError, ValueError):
+            raise ValidationError({'post': 'Informe um ID de post válido.'})
+
+        if post_id < 1:
+            raise ValidationError({'post': 'Informe um ID de post válido.'})
+
+        return queryset.filter(post_id=post_id)
 
     def perform_create(self, serializer):
         # Salva o comentário com o usuário autenticado
